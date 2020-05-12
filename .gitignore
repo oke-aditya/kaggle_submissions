@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+input
+
+# Competition Data
+Advanced/Jigsaw Multilingual Toxic Comment Classification/input/
+
+# Any csv
+*.csv
