@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.vscode
 
 # C extensions
 *.so
@@ -131,6 +132,7 @@ input
 
 # Competition Data
 Advanced/Jigsaw Multilingual Toxic Comment Classification/input/
-
+Advanced/Bengali.AI_Image_Classification/input/
 # Any csv
 *.csv
+Advanced/Bengali.AI_Image_Classification/.vscode/settings.json
