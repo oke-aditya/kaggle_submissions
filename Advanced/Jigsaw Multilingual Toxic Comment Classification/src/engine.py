@@ -2,8 +2,10 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
+
 def loss_fn(outputs, targets):
     return nn.BCEWithLogitsLoss()(outputs, targets.view(-1, 1))
+
 
 def train_fn(data_loader, model, optimizer, scheduler, device):
     model.train()
@@ -22,12 +24,13 @@ def train_fn(data_loader, model, optimizer, scheduler, device):
         outputs = model(ids=ids, mask=mask, token_type_ids=token_type_ids)
 
         loss = loss_fn(outputs, targets)
-    
+
         loss.backward()
 
         # if ((bi + 1) % accumulation_steps == 0):
         optimizer.step()
-        scheduler.step() 
+        scheduler.step()
+
 
 def eval_fn(data_loader, model, device):
     model.eval()
@@ -51,6 +54,3 @@ def eval_fn(data_loader, model, device):
             fin_outputs.extend(torch.sigmoid(outputs).cpu().detach().numpy().tolist())
 
     return fin_outputs, fin_targets
-
-
- 

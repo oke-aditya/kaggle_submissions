@@ -4,6 +4,7 @@ import config
 import torch
 import torch.nn as nn
 
+
 class BERTBasedUncased(nn.Module):
     def __init__(self):
         super().__init__()
@@ -11,13 +12,11 @@ class BERTBasedUncased(nn.Module):
         # self.bert_drop = nn.Dropout(0.3)
         self.l0 = nn.Linear(768, 2)
         # 1 for binary classification
-    
+
     def forward(self, ids, mask, token_type_ids):
         # not using sentiment
         sequence_output, pooled_output = self.bert(
-            ids,
-            attention_mask=mask,
-            token_type_ids=token_type_ids
+            ids, attention_mask=mask, token_type_ids=token_type_ids
         )
         # (batch_size, num_tokens, 768)
         logits = self.l0(sequence_output)
@@ -29,5 +28,3 @@ class BERTBasedUncased(nn.Module):
         # (batch_size, num_tokens), (batch_size, num_tokens)
 
         return start_logits, end_logits
-
-

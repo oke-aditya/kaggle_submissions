@@ -10,11 +10,16 @@ from transformers import get_linear_schedule_with_warmup
 from sklearn import metrics
 import numpy as np
 
+
 def run():
     print("---------- Starting Data Reading -------")
-    df1 = pd.read_csv("../input/jigsaw-toxic-comment-train.csv", usecols=["comment_text", "toxic"])
-    df2 = pd.read_csv("../input/jigsaw-unintended-bias-train.csv", usecols=["comment_text", "toxic"])
-    
+    df1 = pd.read_csv(
+        "../input/jigsaw-toxic-comment-train.csv", usecols=["comment_text", "toxic"]
+    )
+    df2 = pd.read_csv(
+        "../input/jigsaw-unintended-bias-train.csv", usecols=["comment_text", "toxic"]
+    )
+
     df_train = pd.concat([df1, df2], axis=0).reset_index(drop=True)
     df_valid = pd.read_csv("../input/validation.csv")
 
@@ -35,18 +40,20 @@ def run():
     # df_train = df_train.reset_index(drop=True)
     # df_valid = df_valid.reset_index(drop=True)
 
-    train_dataset = dataset.BERTDataset(comment_text=df_train["comment_text"].values, target=df_train["toxic"].values)
-    
-    train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=config.TRAIN_BATCH_SIZE,
-        num_workers=4,
+    train_dataset = dataset.BERTDataset(
+        comment_text=df_train["comment_text"].values, target=df_train["toxic"].values
     )
-    
-    valid_dataset = dataset.BERTDataset(comment_text=df_valid["comment_text"].values, target=df_train["toxic"].values)
-    
+
+    train_dataloader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=config.TRAIN_BATCH_SIZE, num_workers=4,
+    )
+
+    valid_dataset = dataset.BERTDataset(
+        comment_text=df_valid["comment_text"].values, target=df_train["toxic"].values
+    )
+
     valid_dataloader = torch.utils.data.DataLoader(
-        valid_dataset, batch_size=config.VALIDATION_BATCH_SIZE,
-        num_workers=1,
+        valid_dataset, batch_size=config.VALIDATION_BATCH_SIZE, num_workers=1,
     )
     print("---- DataLoaders Created Sucessfully --- ")
 
@@ -57,15 +64,27 @@ def run():
 
     param_optimizer = list(model.named_parameters())
     no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
-    
+
     optimizer_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.001},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
+        {
+            "params": [
+                p for n, p in param_optimizer if not any(nd in n for nd in no_decay)
+            ],
+            "weight_decay": 0.001,
+        },
+        {
+            "params": [
+                p for n, p in param_optimizer if any(nd in n for nd in no_decay)
+            ],
+            "weight_decay": 0.0,
+        },
     ]
 
     num_train_steps = len(dfx) / (config.TRAIN_BATCH_SIZE * config.EPOCHS)
     optimizer = AdamW(optimizer_parameters, lr=3e-5)
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=num_train_steps)
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer, num_warmup_steps=0, num_training_steps=num_train_steps
+    )
 
     best_accuracy = 0
     for epoch in range(config.EPOCHS):
